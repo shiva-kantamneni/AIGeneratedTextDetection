@@ -1,6 +1,7 @@
 const userModel = require("../Models/User");
 const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
+const sendingEmail=require("./Email");
 const signup=async(req,res)=>{
     try{
         const {name,email,password}=req.body;
@@ -11,6 +12,10 @@ const signup=async(req,res)=>{
         const newUser=new userModel({name,email,password});
         newUser.password=await bcrypt.hash(password,10);
         await newUser.save();
+         await sendingEmail(email,
+      "Welcome to AiGen 🎉",
+      `Hello ${name},\n\nYour signup was successful!\n\nThanks,\nTeam AiGen`
+            );
         res.status(201).json({message:'signup success',success:true});
 
 
@@ -35,6 +40,7 @@ const signin=async(req,res)=>{
        const jwtToken=jwt.sign({email:user.email,_id:user._id},
         process.env.JWT_SECRET,{expiresIn:'24h'}
        )
+       await sendingEmail(email,"Welcome Back to AiGen🎉",`Hello ${user.name},\n\nYour Login was successful!\n\nThanks,\nTeam AiGen`)
        res.status(200).json({message:'signin success',success:true,jwtToken,email,name:user.name});
 
 
