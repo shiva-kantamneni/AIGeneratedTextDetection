@@ -1,17 +1,47 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate} from "react-router-dom";
+import axios from 'axios';
+import { handleError, handleSuccess } from "./utills";
 function Login(){
      const [email,setEmail]=useState();
     const [password,setPassword]=useState();
     const [validated, setValidated] = useState(false);
-    const handleSubmit=(e)=>{
+    const navigate=useNavigate();
+    const handleSubmit= async(e)=>{
         e.preventDefault();
-        if ( !email || !password) {
-      setValidated(true); // show errors
-      return;
-    }
+    //     if ( !email || !password) {
+    //   setValidated(true); // show errors
+    //   return;
+    // }
+    
     setValidated(false);
-        axios.post('',{email,password}).then(result=>console.log(result)).catch(err=>console.log(err));
+    //   try{
+        //     const url="http://localhost:3001/auth/login";
+        //     const response=await axios.post(url,{email,password},{
+        //     headers: { "Content-Type": "application/json" }
+        //     });
+        //   const {success,message,jwtToken,name,error}=response.data;
+
+        //   if(success){
+        //     handleSuccess(message);
+        //     console.log("hii");
+        //     localStorage.setItem('token',jwtToken);
+        //     localStorage.setItem('loggedInUser',name);
+        //     setTimeout(()=>{
+                navigate('/Home');
+            // },1000);
+
+        //   }else if(error){
+        //     const details=error?.details[0].message;
+        //     handleError(details);
+        //   }else if(!success){
+        //     handleError(error.response.data.message);
+        //   }
+
+        // }catch(err){
+        //    handleError(err.response.data.message);
+
+        // }
 
 
     }

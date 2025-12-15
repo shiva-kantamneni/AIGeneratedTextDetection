@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link,useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { EyeInvisibleOutlined, EyeOutlined, EyeTwoTone } from '@ant-design/icons';
+import { handleError,handleSuccess } from "./utills";
 
 function SignUp(){
     const [name,setName]=useState();
@@ -9,6 +10,7 @@ function SignUp(){
     const [password,setPassword]=useState();
     const [validated, setValidated] = useState(false);
     const [visible,setVisible]=useState(false);
+     const navigate=useNavigate();
     const handleSubmit= async(e)=>{
         e.preventDefault();
         if (!name || !email || !password) {
@@ -21,18 +23,21 @@ function SignUp(){
         try{
             const url="http://localhost:3001/auth/signup";
             const response=await axios.post(url,{name,email,password},{
-  headers: { "Content-Type": "application/json" }
-});
-            console.log(response);
-
-        }catch(err){
-            
-
+   headers: { "Content-Type": "application/json" }
+      });
+        const data = await response.json();
+        console.log(data);
+         if (response.ok) {
+        navigate("/");
+        } else {
+        alert(data.message);
         }
-        
-
-
     }
+     catch (err) {
+        console.log(err);
+        alert("Something went wrong. Please try again."); // fallback
+    }
+}
 
     return (
         <div className="d-flex justify-content-center align-items-center bg-secondary vh-100">
@@ -74,7 +79,6 @@ function SignUp(){
                         <label htmlFor="password">
                             <strong>Password</strong>
                         </label>
-                        
                         <input
                             type={visible?"text":"password"}
                             
