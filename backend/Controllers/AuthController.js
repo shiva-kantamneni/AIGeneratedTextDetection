@@ -2,6 +2,19 @@ const userModel = require("../Models/User");
 const bcrypt=require('bcrypt')
 const jwt=require('jsonwebtoken')
 const sendingEmail=require("./Email");
+const axios=require('axios');
+async function emailExists(email) {
+    console.log("hii");
+  const key = process.env.Email_verify;
+
+  const res = await axios.get(
+    `http://apilayer.net/api/check?access_key=${key}&email=${email}& smtp = 1
+    & format = 1`
+  );
+  console.log(res);
+  return res.data.format_valid && res.data.smtp_check;
+}
+
 const signup=async(req,res)=>{
     try{
         const {name,email,password}=req.body;
@@ -9,13 +22,19 @@ const signup=async(req,res)=>{
         if(user){
             return res.status(409).json({message:'user is already existed'});
         }
-        const newUser=new userModel({name,email,password});
-        newUser.password=await bcrypt.hash(password,10);
-        await newUser.save();
+       
+        if(await emailExists(email)){
          await sendingEmail(email,
       "Welcome to AiGen 🎉",
       `Hello ${name},\n\nYour signup was successful!\n\nThanks,\nTeam AiGen`
             );
+        }else{
+           
+           return res.status(400).json({message:'Invalid Email',success:false});
+        }
+         const newUser=new userModel({name,email,password});
+        newUser.password=await bcrypt.hash(password,10);
+        await newUser.save();
         res.status(201).json({message:'signup success',success:true});
 
 
